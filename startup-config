@@ -1,0 +1,270 @@
+hostname tor-a
+
+ip domain-name amzn-bootstrap.local
+
+aaa root nopassword
+aaa authentication policy local allow-nopassword-remote-login
+!
+username admin privilege 15 role network-admin nopassword
+
+event-handler setup
+  trigger on-boot
+  action bash /mnt/flash/bootstrap/setup.sh &
+  delay 300
+
+vrf definition management
+  rd 1:1
+
+interface Loopback99
+  ip address 169.254.99.1/32
+
+interface Management1
+  vrf forwarding management
+  ip address 192.168.99.1/24
+
+  interface Ethernet1
+    no switchport
+    description vtep-01:ethernet1
+    ip address 169.254.0.0/31
+  !
+  interface Ethernet2
+    no switchport
+    description vtep-02:ethernet1
+    ip address 169.254.0.2/31
+  !
+  interface Ethernet3
+    no switchport
+    description vtep-03:ethernet1
+    ip address 169.254.0.4/31
+  !
+  interface Ethernet4
+    no switchport
+    description vtep-04:ethernet1
+    ip address 169.254.0.6/31
+  !
+  interface Ethernet5
+    no switchport
+    description vtep-05:ethernet1
+    ip address 169.254.0.8/31
+  !
+  interface Ethernet6
+    no switchport
+    description vtep-06:ethernet1
+    ip address 169.254.0.10/31
+  !
+  interface Ethernet7
+    no switchport
+    description vtep-07:ethernet1
+    ip address 169.254.0.12/31
+  !
+  interface Ethernet8
+    no switchport
+    description vtep-08:ethernet1
+    ip address 169.254.0.14/31
+  !
+  interface Ethernet9
+    no switchport
+    description vtep-09:ethernet1
+    ip address 169.254.0.16/31
+  !
+  interface Ethernet10
+    no switchport
+    description vtep-10:ethernet1
+    ip address 169.254.0.18/31
+  !
+  interface Ethernet11
+    no switchport
+    description vtep-11:ethernet1
+    ip address 169.254.0.20/31
+  !
+  interface Ethernet12
+    no switchport
+    description vtep-12:ethernet1
+    ip address 169.254.0.22/31
+  !
+  interface Ethernet13
+    no switchport
+    description vtep-13:ethernet1
+    ip address 169.254.0.24/31
+  !
+  interface Ethernet14
+    no switchport
+    description vtep-14:ethernet1
+    ip address 169.254.0.26/31
+  !
+  interface Ethernet15
+    no switchport
+    description vtep-15:ethernet1
+    ip address 169.254.0.28/31
+  !
+  interface Ethernet16
+    no switchport
+    description vtep-16:ethernet1
+    ip address 169.254.0.30/31
+  !
+  interface Ethernet17
+    no switchport
+    description vtep-17:ethernet1
+    ip address 169.254.0.32/31
+  !
+  interface Ethernet18
+    no switchport
+    description vtep-18:ethernet1
+    ip address 169.254.0.34/31
+  !
+  interface Ethernet19
+    no switchport
+    description vtep-19:ethernet1
+    ip address 169.254.0.36/31
+  !
+  interface Ethernet20
+    no switchport
+    description vtep-20:ethernet1
+    ip address 169.254.0.38/31
+  !
+  interface Ethernet21
+    no switchport
+    description vtep-21:ethernet1
+    ip address 169.254.0.40/31
+  !
+  interface Ethernet22
+    no switchport
+    description vtep-22:ethernet1
+    ip address 169.254.0.42/31
+  !
+  interface Ethernet23
+    no switchport
+    description vtep-23:ethernet1
+    ip address 169.254.0.44/31
+  !
+  interface Ethernet24
+    no switchport
+    description vtep-24:ethernet1
+    ip address 169.254.0.46/31
+  !
+  interface Ethernet25
+    no switchport
+    description vtep-25:ethernet1
+    ip address 169.254.0.48/31
+  !
+  interface Ethernet26
+    no switchport
+    description vtep-26:ethernet1
+    ip address 169.254.0.50/31
+  !
+  interface Ethernet27
+    no switchport
+    description vtep-27:ethernet1
+    ip address 169.254.0.52/31
+  !
+  interface Ethernet28
+    no switchport
+    description vtep-28:ethernet1
+    ip address 169.254.0.54/31
+  !
+  interface Ethernet29
+    no switchport
+    description vtep-29:ethernet1
+    ip address 169.254.0.56/31
+  !
+  interface Ethernet30
+    no switchport
+    description vtep-30:ethernet1
+    ip address 169.254.0.58/31
+  !
+  interface Ethernet31
+    no switchport
+    description vtep-31:ethernet1
+    ip address 169.254.0.60/31
+  !
+  interface Ethernet32
+    no switchport
+    description vtep-32:ethernet1
+    ip address 169.254.0.62/31
+!
+interface Ethernet33
+!
+interface Ethernet34
+!
+interface Ethernet35
+!
+interface Ethernet36
+!
+interface Ethernet37
+!
+interface Ethernet38
+!
+interface Ethernet39
+!
+interface Ethernet40
+!
+interface Ethernet41
+!
+interface Ethernet42
+!
+interface Ethernet43
+!
+interface Ethernet44
+!
+interface Ethernet45
+!
+interface Ethernet46
+!
+interface Ethernet47
+!
+interface Ethernet48
+!
+interface Ethernet49
+!
+interface Ethernet50
+!
+interface Ethernet51
+!
+interface Ethernet52
+
+!interface Vxlan 1
+! vxlan source-interface Loopback 1
+! vxlan udp-port 4789
+! vxlan vlan 100 vni 10000
+! vxlan vlan 200 vni 20000
+! vxlan flood vtep 10.10.1.1
+
+ip route vrf management 0.0.0.0/0 192.168.13.1
+
+!
+ip routing
+no ip routing vrf management
+
+router ospf 65535
+   max-lsa 12000
+
+ip access-list BOOTSTRAP-CONTROL-PLANE
+  10 permit icmp any any
+  20 permit ip any any tracked
+  30 permit udp any any eq bfd ttl eq 255
+  40 permit udp any any eq bfd-echo ttl eq 254
+  50 permit ospf any any
+  60 permit tcp any any eq ssh telnet www snmp bgp https msdp
+  70 permit udp any any eq bootps bootpc snmp rip ntp
+  80 permit tcp any any eq mlag ttl eq 255
+  90 permit udp any any eq mlag ttl eq 255
+  100 permit vrrp any any
+  110 permit ahp any any
+  120 permit pim any any
+  130 permit igmp any any
+  140 permit tcp any any range 5900 5910
+  150 permit tcp any any range 50000 50100
+  160 permit udp any any range 51000 51100
+  170 permit tcp any any eq mlag-arp-sync ttl eq 255
+  180 permit udp any any eq domain
+  190 permit tcp any any eq domainconf
+  200 permit tcp any any eq 8000 8080
+
+control-plane
+  ip access-group BOOTSTRAP-CONTROL-PLANE in
+
+management api http-commands
+   protocol unix-socket
+   no shutdown
+   vrf management
+      no shutdown
